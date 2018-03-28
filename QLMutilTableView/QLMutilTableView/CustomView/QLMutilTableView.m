@@ -19,7 +19,6 @@
 @property (nonatomic, strong) UITableView *leftTableView;   //左边不能左右滑动的表格
 @property (nonatomic, strong) UITableView *rightTableView;  //右边可以左右滑动的标题内容表格
 @property (nonatomic, strong) UIScrollView *containerScrollView;    //底部容器ScrollView
-@property (nonatomic, assign) CGFloat leftTableWidth;     //左边表格的宽度
 @property (nonatomic, assign) CGFloat rightTableWidth;    //右边表格的宽度
 
 @end
@@ -27,30 +26,22 @@
 @implementation QLMutilTableView
 
 #pragma mark - life cycle
-- (instancetype)initWithFrame:(CGRect)frame leftTitleSize:(CGSize)titleSize rightTableContentSize:(CGSize)contentSize {
+- (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
+        self.backgroundColor = [UIColor whiteColor];
         self.headList = [[NSMutableArray alloc] init];
         self.alignment = NSTextAlignmentCenter; //默认标题项居中
         self.supportTitleClicked = NO;  //默认不支持排序
-        if (CGSizeEqualToSize(titleSize, CGSizeZero)) { //titleSize没有值时，使用默认值对数据进行初始化
-            self.titleheight = DefaultTableTitleHeight;  //设置默认的行高
-            self.leftTableWidth = DefaultLeftTableWidth;    //设置默认的左表宽度
-        } else {
-            self.titleheight = titleSize.height;  //设置默认的行高
-            self.leftTableWidth = titleSize.width;    //设置默认的左表宽度
-        }
-        self.frame = frame;
-        self.rightTableWidth = contentSize.width;
+        self.titleheight = DefaultTableTitleHeight;  //设置默认的行高
+        self.leftTableWidth = DefaultLeftTableWidth;    //设置默认的左表宽度
+        self.rightTableWidth = CGRectGetWidth(frame) - self.leftTableWidth;
         [self addSubview:self.leftTitleLabel];
         [self addSubview:self.topicScrollView];
         [self addSubview:self.containerScrollView];
         [self addSubview:self.leftTableView];
         [self.containerScrollView addSubview:self.rightTableView];
-        self.leftTitleLabel.frame = CGRectMake(0, 0, self.leftTableWidth, self.titleheight);
-        [self.rightTableView setContentSize:contentSize];
-        self.containerScrollView.contentSize = CGSizeMake(contentSize.width + titleSize.width, 1);
-        self.topicScrollView.contentSize = CGSizeMake(contentSize.width, self.titleheight);
+        [self configMutilTableSubViewFrameAndContentSize];
     }
     
     return self;
@@ -103,71 +94,17 @@
     }
 }
 
-//控制当滑动停止时某一项数据显示不全时，左右自动偏移让当前数据项显示完整
+//滑动列表停止拖拽时
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-    CGFloat widthOfItem = self.rightTableView.frame.size.width / [self.headList count];
     if (scrollView != nil && (scrollView == self.containerScrollView || scrollView == self.topicScrollView) && !decelerate) {
-        float offsetx = scrollView.contentOffset.x;
-        int nDiff = 0;  //记录滚动停止时需要偏移的offset
-        int nSign = 1;
-        if(offsetx + scrollView.frame.size.width >= scrollView.contentSize.width) {
-            nDiff = 0;
-        } else {
-            if(offsetx >= widthOfItem) {
-                nDiff = (int)(offsetx) % (int)widthOfItem;
-                if(nDiff > (widthOfItem / 2)) {
-                    nDiff = widthOfItem - nDiff;
-                    nSign = -1;
-                }
-            } else {
-                nDiff = (int)offsetx;
-                if(nDiff > (widthOfItem / 2)) {
-                    nDiff = widthOfItem - nDiff;
-                    nSign = -1;
-                }
-            }
-        }
-        if(nDiff != 0) {
-            float ff = scrollView.contentOffset.x;
-            ff -= (nDiff * nSign);
-            CGRect vr = CGRectMake(ff, scrollView.contentOffset.y, scrollView.frame.size.width,scrollView.frame.size.height);
-            [scrollView scrollRectToVisible:vr animated:YES];
-            return;
-        }
+        [self correctColumnOffsetWhileScrollViewEndScroll:scrollView];
     }
 }
 
-//控制当滑动停止时某一项数据显示不全时，左右自动偏移让当前数据项显示完整
+//滑动列表减速到停止滚动时
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    CGFloat widthOfItem = self.rightTableView.frame.size.width / [self.headList count];
     if (scrollView != nil && (scrollView == self.containerScrollView || scrollView == self.topicScrollView)) {
-        float offsetx = scrollView.contentOffset.x;
-        int nDiff = 0;
-        int nSign = 1;
-        if(offsetx + scrollView.frame.size.width >= scrollView.contentSize.width) {
-            nDiff = 0;
-        } else {
-            if(offsetx >= widthOfItem) {
-                nDiff = (int)(offsetx) % (int)widthOfItem;
-                if(nDiff > (widthOfItem / 2)) {
-                    nDiff = widthOfItem - nDiff;
-                    nSign = -1;
-                }
-            } else {
-                nDiff = (int)offsetx;
-                if(nDiff > (widthOfItem / 2)) {
-                    nDiff = widthOfItem - nDiff;
-                    nSign = -1;
-                }
-            }
-        }
-        if(nDiff != 0) {
-            float ff = scrollView.contentOffset.x;
-            ff -= (nDiff * nSign);
-            CGRect vr = CGRectMake(ff, scrollView.contentOffset.y, scrollView.frame.size.width, scrollView.frame.size.height);
-            [scrollView scrollRectToVisible:vr animated:YES];
-            return;
-        }
+        [self correctColumnOffsetWhileScrollViewEndScroll:scrollView];
     }
 }
 
@@ -229,9 +166,8 @@
 - (void)setRightTableViewTopics:(NSArray *)headList {
     if(headList && [headList count] > 0) {
         for (int i = 0; i < [headList count]; i++) {
-            CGFloat numWidth = CGRectGetWidth(self.rightTableView.frame) / [headList count];
             UIButton *titleBtn = [UIButton buttonWithType:UIButtonTypeSystem];
-            titleBtn.frame = CGRectMake(numWidth * i, 0, numWidth, self.titleheight);
+            titleBtn.frame = CGRectMake(self.rightColumnWidth * i, 0, self.rightColumnWidth, self.titleheight);
             [titleBtn addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
             if (self.titleTextFont) {
                 titleBtn.titleLabel.font = self.titleTextFont;
@@ -257,6 +193,49 @@
             [titleBtn setTitle:[NSString stringWithFormat:@"%@", [headList objectAtIndex:i]] forState:UIControlStateNormal];
             [self.topicScrollView addSubview:titleBtn];
         }
+    }
+}
+
+//设置多表控件内部滚动视图的布局与contentSize
+- (void)configMutilTableSubViewFrameAndContentSize {
+    self.leftTitleLabel.frame = CGRectMake(0, 0, self.leftTableWidth, self.titleheight);
+    self.topicScrollView.frame = CGRectMake(self.leftTableWidth, 0, CGRectGetWidth(self.frame) - self.leftTableWidth, self.titleheight);
+    self.containerScrollView.frame = CGRectMake(0, self.titleheight, CGRectGetWidth(self.frame), CGRectGetHeight(self.frame) - self.titleheight);
+    self.leftTableView.frame = CGRectMake(0, self.titleheight, self.leftTableWidth, CGRectGetHeight(self.frame) - self.titleheight);
+    self.rightTableView.frame = CGRectMake(self.leftTableWidth, 0, self.rightTableWidth, CGRectGetHeight(self.containerScrollView.frame));
+    [self.rightTableView setContentSize:CGSizeMake(self.rightTableWidth, CGRectGetHeight(self.frame))];
+    self.containerScrollView.contentSize = CGSizeMake(self.leftTableWidth + self.rightTableWidth, 1);
+    self.topicScrollView.contentSize = CGSizeMake(self.rightTableWidth, self.titleheight);
+}
+
+//控制当滑动停止时某一项数据显示不全时，左右自动偏移让当前数据项显示完整
+- (void)correctColumnOffsetWhileScrollViewEndScroll:(UIScrollView *)scrollView {
+    float offsetx = scrollView.contentOffset.x;
+    int nDiff = 0;
+    int nSign = 1;
+    if(offsetx + scrollView.frame.size.width >= scrollView.contentSize.width) {
+        nDiff = 0;
+    } else {
+        if(offsetx >= self.rightColumnWidth) {
+            nDiff = (int)(offsetx) % (int)self.rightColumnWidth;
+            if(nDiff > (self.rightColumnWidth / 2)) {
+                nDiff = self.rightColumnWidth - nDiff;
+                nSign = -1;
+            }
+        } else {
+            nDiff = (int)offsetx;
+            if(nDiff > (self.rightColumnWidth / 2)) {
+                nDiff = self.rightColumnWidth - nDiff;
+                nSign = -1;
+            }
+        }
+    }
+    if(nDiff != 0) {
+        float ff = scrollView.contentOffset.x;
+        ff -= (nDiff * nSign);
+        CGRect vr = CGRectMake(ff, scrollView.contentOffset.y, scrollView.frame.size.width, scrollView.frame.size.height);
+        [scrollView scrollRectToVisible:vr animated:YES];
+        return;
     }
 }
 
@@ -292,7 +271,7 @@
 
 - (UIScrollView *)topicScrollView {
     if (!_topicScrollView) {
-        _topicScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(self.leftTableWidth, 0, CGRectGetWidth(self.frame) - self.leftTableWidth, self.titleheight)];
+        _topicScrollView = [[UIScrollView alloc] init];
         _topicScrollView.alwaysBounceHorizontal = YES;
         _topicScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;//顶部的表头，只要保证宽度自适应
         _topicScrollView.scrollEnabled = YES;
@@ -305,7 +284,7 @@
 
 - (UIScrollView *)containerScrollView {
     if (!_containerScrollView) {
-        _containerScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, self.titleheight, CGRectGetWidth(self.frame), CGRectGetHeight(self.frame) - self.titleheight)];
+        _containerScrollView = [[UIScrollView alloc] init];
         _containerScrollView.backgroundColor = [UIColor whiteColor];
         _containerScrollView.delegate =self;
         _containerScrollView.showsVerticalScrollIndicator = NO;
@@ -356,6 +335,22 @@
     return _arrorImageView;
 }
 
+- (void)setLeftTableWidth:(CGFloat)leftTableWidth {
+    _leftTableWidth = leftTableWidth;
+    if (self.headList.count > 0) {  //当右边列存在数据时，才对列表布局进行跟新，否则只是记录当前的左边宽度
+        [self configMutilTableSubViewFrameAndContentSize];  //根据左侧的宽度重新设置视图的布局
+    }
+}
+
+- (void)setRightColumnWidth:(CGFloat)rightColumnWidth {
+    _rightColumnWidth = rightColumnWidth;
+    if (self.headList.count > 0) {  //当右边列存在数据时，才对列表布局进行跟新，否则只是记录当前的右边宽度
+        self.rightTableWidth = _rightColumnWidth * self.headList.count;
+        [self configMutilTableSubViewFrameAndContentSize];  //根据左侧的宽度重新设置视图的布局
+        [self setRightTableViewTopics:self.headList];
+    }
+}
+
 - (void)setMutilRowHeight:(CGFloat)mutilRowHeight {
     _mutilRowHeight = mutilRowHeight;
     self.leftTableView.rowHeight = _mutilRowHeight;
@@ -391,7 +386,11 @@
 
 - (void)setHeadList:(NSArray *)headList {
     _headList = [headList copy];
-    [self setRightTableViewTopics:headList];
+    if (_headList.count > 0 && self.rightColumnWidth > 0) {  //当右边列存在数据时，才对列表布局进行跟新
+        self.rightTableWidth = self.rightColumnWidth * self.headList.count;
+        [self configMutilTableSubViewFrameAndContentSize];  //根据左侧的宽度重新设置视图的布局
+        [self setRightTableViewTopics:self.headList];
+    }
 }
 
 - (void)setMutilBackGroundColor:(UIColor *)mutilBackGroundColor {

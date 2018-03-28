@@ -94,19 +94,20 @@
 #pragma mark - setter and getter
 - (QLMutilTableView *)mutilTableView {
     if (!_mutilTableView) {
-        _mutilTableView = [[QLMutilTableView alloc] initWithFrame:CGRectMake(0, NavigationBarHeight, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame) - NavigationBarHeight) leftTitleSize:CGSizeMake(90, 40) rightTableContentSize:CGSizeMake((CGRectGetWidth(self.view.frame) - 90) / 3.0 * 10, CGRectGetHeight(self.view.frame))];
-        _mutilTableView.delegate = self;
-        _mutilTableView.showArrow = YES;
-        _mutilTableView.sortDelegate = self;
-        _mutilTableView.supportTitleClicked = YES;
-        _mutilTableView.mutilRowHeight = 50;
-        _mutilTableView.backgroundColor = [UIColor whiteColor];
+        _mutilTableView = [[QLMutilTableView alloc] initWithFrame:CGRectMake(0, NavigationBarHeight, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame) - NavigationBarHeight)];
         _mutilTableView.mutilBackGroundColor = [UIColor whiteColor];
         _mutilTableView.mutilTitleBackGroundColor = [UIColor colorWithRed:235/255.0f green:235/255.0f blue:235/255.0f alpha:1.0];
         _mutilTableView.titleTextColor = [UIColor blackColor];
         _mutilTableView.titleTextFont = [UIFont systemFontOfSize:15];
-        _mutilTableView.headList = [NSArray arrayWithObjects:@"第一列", @"第二列", @"第三列", @"第四列", @"第五列", @"第六列", @"第七列", @"第八列", @"第九列", @"第十列", nil];
+        _mutilTableView.mutilRowHeight = 50;
+        _mutilTableView.leftTableWidth = 90;
+        _mutilTableView.rightColumnWidth = 90;
         _mutilTableView.leftTitleString = @"固定列";
+        _mutilTableView.headList = [NSArray arrayWithObjects:@"第一列", @"第二列", @"第三列", @"第四列", @"第五列", @"第六列", @"第七列", @"第八列", @"第九列", @"第十列", nil];
+        _mutilTableView.showArrow = YES;
+        _mutilTableView.supportTitleClicked = YES;
+        _mutilTableView.delegate = self;
+        _mutilTableView.sortDelegate = self;
         _mutilTableView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight;
     }
     

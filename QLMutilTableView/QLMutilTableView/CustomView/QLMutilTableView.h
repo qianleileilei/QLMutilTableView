@@ -75,6 +75,12 @@ typedef NS_ENUM(NSInteger, TableType) {
 /** 表头标题的高度 */
 @property (nonatomic, assign) CGFloat titleheight;
 
+/** 左边固定列的宽度 */
+@property (nonatomic, assign) CGFloat leftTableWidth;
+
+/** 右侧表格的单列宽度 */
+@property (nonatomic, assign) CGFloat rightColumnWidth;
+
 /** 设置cell的行高 */
 @property (nonatomic, assign) CGFloat mutilRowHeight;
 
@@ -104,18 +110,6 @@ typedef NS_ENUM(NSInteger, TableType) {
 
 /** 是否支持表格的上下滑动 */
 @property (nonatomic, assign) BOOL verticalScrollEnable;
-
-/**
- * 表格的初始化方法，需要传入部分参数，已确定子控件的显示比例
- *
- * @prama frame 整个控件的frame大小
- *
- * @prama titleSize 左边表格标题的size，可以确定左表固定列的宽度，以及表头的高度
- *
- * @prama contentSize 右边的内容size，用以确定右表的宽度和高度
- *
- */
-- (instancetype)initWithFrame:(CGRect)frame leftTitleSize:(CGSize)titleSize rightTableContentSize:(CGSize)contentSize;
 
 /**
  * 组合表格重新加载刷新数据
