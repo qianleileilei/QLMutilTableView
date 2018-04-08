@@ -1,5 +1,8 @@
 # QLMutilTableView
+
 一个多表的实现方式
+
+# 博客地址:https://www.jianshu.com/p/589fcc1d22b9
 
 需要达到的效果：
 1、左右滑动时，保证第一列固定不动，右侧的列表可以根据手势进行左右滑动；
