@@ -1,5 +1,5 @@
 <p align="center" >
-<img src="https://upload-images.jianshu.io/upload_images/4840889-3ff0f067adef635c.gif?imageMogr2/auto-orient/strip%7CimageView2/2/w/424" alt="QLMutilTableView" title="QLMutilTableView">
+<img src="https://github.com/qianleileilei/QLMutilTableView/blob/master/QLMutilTableView/QLMutilTableView/4840889-3ff0f067adef635c.gif" alt="QLMutilTableView" title="QLMutilTableView">
 </p>
 
 
