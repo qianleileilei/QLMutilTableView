@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2D23897C208BABED00B78AC2 /* 4840889-3ff0f067adef635c.gif in Resources */ = {isa = PBXBuildFile; fileRef = 2D23897B208BABED00B78AC2 /* 4840889-3ff0f067adef635c.gif */; };
 		9655B2A92069E7630040CCCC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9655B2A82069E7630040CCCC /* AppDelegate.m */; };
 		9655B2AC2069E7630040CCCC /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9655B2AB2069E7630040CCCC /* ViewController.m */; };
 		9655B2AF2069E7630040CCCC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9655B2AD2069E7630040CCCC /* Main.storyboard */; };
@@ -22,6 +23,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2D23897B208BABED00B78AC2 /* 4840889-3ff0f067adef635c.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "4840889-3ff0f067adef635c.gif"; sourceTree = "<group>"; };
 		9655B2A42069E7630040CCCC /* QLMutilTableView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QLMutilTableView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9655B2A72069E7630040CCCC /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		9655B2A82069E7630040CCCC /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -88,6 +90,7 @@
 				9655B2B02069E7630040CCCC /* Assets.xcassets */,
 				9655B2B22069E7630040CCCC /* LaunchScreen.storyboard */,
 				9655B2CE206A2F3E0040CCCC /* arrow.png */,
+				2D23897B208BABED00B78AC2 /* 4840889-3ff0f067adef635c.gif */,
 				9655B2B52069E7630040CCCC /* Info.plist */,
 				9655B2B62069E7630040CCCC /* main.m */,
 			);
@@ -165,6 +168,7 @@
 				9655B2C8206A1B650040CCCC /* LeftTableViewCell.xib in Resources */,
 				9655B2B42069E7630040CCCC /* LaunchScreen.storyboard in Resources */,
 				9655B2B12069E7630040CCCC /* Assets.xcassets in Resources */,
+				2D23897C208BABED00B78AC2 /* 4840889-3ff0f067adef635c.gif in Resources */,
 				9655B2CF206A2F3E0040CCCC /* arrow.png in Resources */,
 				9655B2AF2069E7630040CCCC /* Main.storyboard in Resources */,
 			);
